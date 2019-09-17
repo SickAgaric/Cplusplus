@@ -1,74 +1,107 @@
-//加一
-int* plusOne(int* digits, int digitsSize, int* returnSize){
-	int i = digitsSize - 1;
-	for (i; i >= 0; i--)
-	{
-		if (digits[i] < 9)
-		{
-			digits[i]++;
-			*returnSize = digitsSize;
-			return digits;
-		}
-	digits[i] = 0;
-	}
-	int* new = (int*)malloc((digitsSize + 1) * sizeof (int));
-	new[0] = 1;
-	for (i = 1; i < digitsSize + 1; i++)
-		new[i] = 0;
-	*returnSize = digitsSize+1;
-	return new;
+#pragma once 
+#include<iostream>
+using namespace std;
 
-}
-//移除元素
-struct ListNode* removeElements(struct ListNode* head, int val)
+class  Date
 {
-	if (!head)
-		return NULL;
-
-	struct ListNode *p, *pre;
-
-	p = head;
-	pre = p;
-	while (p)
+public:
+	int GetDay(int year, int month)
 	{
-		if (p->val == val)
-		{
-			if (p == head)
-			{
-				head = head->next;
-				p = head;
+		static int _Day[13] = { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 
-			}
-			else{
-				p = p->next;
-				pre->next = p;
-			}
+		if (month == 2
+			&& (year % 4 == 0 && year % 100 != 0
+			|| year % 400 == 0))
+			return 29;
+
+
+		else
+			return _Day[month];
+	}
+	Date(int year = 1900, int month = 1, int day = 1)
+	{
+		_year = year;
+		_month = month;
+		_day = day;
+
+		if (year >= 1900
+			&& month > 0 && month < 13
+			&& day > 0 && day <= GetDay(year, month))
+		{
+			cout << year << "-" << month << "-" << day << endl;
 		}
+
 		else
 		{
-			pre = p;
-			p = p->next;
+			cout << "输入错误\n" << endl;
 		}
-		
 
 	}
-	return head;
 
-}
-struct ListNode *reverseList(struct ListNode *head)
+	bool operator>(const Date& d)   //m
+	{
+		if (_year > d._year)
+			return 1;
+		else if (_month > d._month)
+			return 1;
+		else if (_day > d._day)
+			return 1;
+		else
+			return -1;
+
+		/*return _year > d._year
+			&&_month > d._month
+			&&_day > d._day;*/
+	}
+	bool operator<(const Date& d)
+	{
+		;
+	}
+	bool operator==(const Date& d)
+	{
+		return _year == d._year
+			&& _month == d._month
+			&& _day == d._day;
+	}//m
+	bool operator!=(const Date& d)
+	{
+		return !(_year == d._year
+			&& _month == d._month
+			&& _day == d._day);
+	}
+	bool operator>=(const Date& d);
+	bool operator<=(const Date& d);
+
+	Date operator+(int day);
+	Date operator-(int day);
+	Date operator+=(int day);   //负数
+	Date operator-=(int day);
+
+
+	Date operator++(); //为什么要写一个++，用++的时候可能出现非法日期。
+	Date operator++(int);
+
+	Date operator--();
+	Date operator--(int);
+
+	int operator-(const Date&d); //与1900-1-1相减计算
+
+
+private:
+	int _year;
+	int _month;
+	int _day;
+};
+
+void Test()
 {
-    struct ListNode *new_head = NULL, *temp = NULL;
-    if (!head || !head->next)
-    {
-        return head;
-    }
-    while (head != NULL)
-    {
-        temp = head->next;     // 临时记录指针一直指向当前节点的下一个结点，防止断链找不到
-        head->next = new_head; // 当前节点的next指针链到新节点上
-        new_head = head;       // 新节点移动到刚才节点上，使得下次能够倒序链接节点
-        head = temp;           // 当前节点移动到一开始保存的下一个结点
-    }
-    return new_head;
-}
+	//重载操作符必须有一个类类型
+	Date d1;
+	Date d2(1993, 2, 2);
+	Date d3(1995, 4, 5);
+	//cout << "da" << endl;
+	cout << (d2 > d3) << endl;
+	cout << (d2 == d3) << endl;
+	cout << (d2 != d3) << endl;
 
+}
