@@ -162,7 +162,42 @@ void Test2()
 	cout << s << endl;*/
 
 }
-
+class Solution {
+public:
+    int firstUniqChar(string s) {
+        
+        /*if(s.empty())
+            return -1;
+        
+        int pos = 0;
+        
+        size_t _i = 0;
+        
+        
+        
+        for(size_t i = 0;i < s.size(); i++)
+        {
+            
+            for(_i = i+1;i<s.size();i++)
+            {
+                if(s[i]==s[_i])
+                {
+                    pos++;
+                    break;
+                }
+            }
+            if(pos==0)
+                return i;
+            else
+                pos = 0;
+            
+            
+        }
+        return -1;
+    }*/
+        
+        
+};
 
 
 int main()
