@@ -292,3 +292,166 @@ my_string& operator+=(const char* str)
 
 
 		}
+		my_string SubStr(size_t pos, size_t n)
+		{
+			char* s = new char[n + 1];
+			size_t i = 0;
+			while (pos<_size && n)
+			{
+				s[i] = _str[pos];
+				i++;
+				pos++;
+				n--;
+			}
+			s[i] = '\0';
+			_str = s;
+
+			return *this;
+		}
+		// 在pos位置上插入字符c/字符串str，并返回该字符的位置
+		my_string& Insert(size_t pos, char c)
+		{
+
+			assert(pos <= _size);
+
+			Creat(_size + 1);
+			size_t end = _size;
+			while (end >= pos)
+			{
+				_str[end + 1] = _str[end];
+				end--;
+			}
+
+			_str[pos] = c;
+			_size++;
+			return *this;
+
+		}
+		my_string& Insert(size_t pos, const char* str)
+		{
+			assert(pos <= _size);
+			size_t len = strlen(str);
+			Creat(len+_size);
+
+			size_t end = _size;
+			while (end >= pos)
+			{
+				_str[end + len] = _str[end];
+				end--;
+			}
+			size_t i = 0;
+			size_t _len = len;//注意，len会在循环中发生变化，所以在_size+=len的时候得小心出现错误
+			while (len--)
+			{
+				_str[pos] = str[i];
+				i++;
+				pos++;
+			}
+			_size += _len;//_capacity在CREAT函数中变化，_size发生变化
+
+			return *this;
+		}
+		// 删除pos位置上的元素，并返回该元素的下一个位置
+		my_string& Erase(size_t pos, size_t len)
+		{
+			/*assert(pos <= _size&&len<_size-pos);
+
+			size_t _len = len;
+			while (len--)
+			{
+				_str[pos] = _str[pos + _len];
+				pos++;
+			}*/
+
+			assert(pos <= _size);
+
+			size_t start = pos + len;
+			size_t end = _size;
+
+			while (start <= end)
+			{
+				_str[pos++] = _str[start++];//直接从后往前进行覆盖，然后对_size进行改变
+			}
+			_size -= len;
+			return *this;
+		}
+		
+	private:
+		friend ostream& operator<<(ostream& _cout, const cx::my_string& s);
+	private:
+		char* _str;
+		size_t _capacity;
+		size_t _size;
+	};
+
+}
+ostream& cx::operator<<(ostream& _cout, const cx::my_string& s) {
+	cout << s._str;
+	return _cout;
+}
+
+void test1()
+{
+	cx::my_string s1;
+	cx::my_string s2("abcde");
+	cx::my_string s3(s2);
+
+
+	s2.my_push_back('f');
+	s2.my_push_back('g');
+	s2.my_append(3, 'i');
+
+	s2 += 'j';
+
+	/*auto it = s2.begin();
+
+	while (it != s2.end())
+	{
+		cout << *it++;
+	}
+	cout << endl;*/
+
+	s1 = s3;
+
+	cout << s1 << endl;
+	cout << s2 << endl;
+
+	s1.Swap(s2);
+	cout << s1 << endl;
+	cout << s2 << endl;
+
+	//cout << s1 << endl;
+	//cout << s2 << endl;
+	//cout << s3 << endl;
+}
+
+
+void test2()
+{
+	cx::my_string s1("hello");
+	cx::my_string s2("hello");
+
+	//cout << s1.Find("hell") << endl;
+	//cout << s1.SubStr(0, 2) << endl;
+	s1.Insert(1, "abc");
+	s1.Erase(1, 3);
+	cout << s1;
+	/*if (s1 == s2)
+	{
+		cout << 123 << endl;
+	}*/
+
+	
+	/*cout << s1.my_size() << endl;
+	cout << s1.my_capacity() << endl;
+	cout << s1 << endl;
+
+	s1.my_resize(10, 'a');
+	cout << s1.my_size() << endl;
+	cout << s1.my_capacity() << endl;
+	cout << s1 << endl;*/
+
+}
+
+
+
