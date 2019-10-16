@@ -102,3 +102,193 @@ namespace cx
 			for (size_t i = 0; i < strlen(str); i++)
 				my_push_back(str[i]);
 		}
+my_string& operator+=(const char* str)
+		{
+			for (size_t i = 0; i < strlen(str); i++)
+				my_push_back(str[i]);
+
+			return *this;
+		}
+
+
+		void clear_init() //清空数据
+		{
+			_size = 0;
+			_str[_size] = '\0';
+		}
+
+		void Swap(my_string& s)
+		{
+			swap(_str, s._str);
+			swap(_size, s._size);
+			swap(_capacity, s._capacity);
+		}
+
+		const char* my_c_str()const
+		{
+			return _str;
+		}
+
+		size_t my_size()const
+		{
+			return _size;
+		}
+
+		size_t my_capacity()const
+		{
+			return _capacity;
+		}
+
+		bool my_empty()
+		{
+			return _size == 0;
+		}
+
+		void my_resize(size_t newsize, char c = char())
+		{
+			if (newsize > _size) 
+			{
+				if (newsize > _capacity)
+					Creat(newsize);
+
+				memset(_str, c, newsize-_size);
+			}
+
+			_size = newsize;
+			_str[newsize] = '\0';
+		}
+
+		char& operator[](size_t index)
+		{
+			
+			return _str[index];
+		}
+
+		const char& operator[](size_t index)const
+		{
+			
+			return _str[index];
+		}
+
+		bool operator<(const my_string& s)
+		{
+			/*int i = 0;
+
+			while (i<_size && i<s._size)
+			{
+				if (_str[i] < s._str[i])
+					return true;
+				else if (_str[i] > s._str[i])
+					return false;
+
+				i++;
+			}
+
+			if (_size<s._size)
+				return true;
+			else
+				return false;*/
+			return !strcmp(_str, s._str);
+		}
+		bool operator<=(const my_string& s)
+		{
+			return !(*this > s);
+		}
+		bool operator>(const my_string& s)
+		{
+			return strcmp(_str, s._str) == 1;
+		}
+		bool operator>=(const my_string& s)
+		{
+			return !(*this < s);
+		}
+		bool operator==(const my_string& s)
+		{
+			if (_size != s._size)
+				return false;
+
+			return strcmp(_str, s._str) ? false : true;
+		}
+		bool operator!=(const my_string& s)
+		{
+			return !(*this == s);
+		}
+		
+
+		void Creat(size_t newcapacity)//扩容
+		{
+			if (newcapacity > _capacity)
+			{
+				char* s = new char[newcapacity + 1];
+				strcpy(s, _str);
+
+				delete[] _str;
+				_str = s;
+				_capacity = newcapacity;
+			}
+		}
+
+		// 返回c在string中第一次出现的位置
+		
+		size_t Find(char c, size_t pos = 0) 
+		{
+			size_t i = 0;
+			while (_str[i])
+			{
+				if (_str[i] == c)
+					return i;
+				i++;
+			}
+			return -1;
+		}
+
+		size_t Find(char c, size_t pos = 0) const
+		{
+			size_t i = 0;
+			while (_str[i])
+			{
+				if (_str[i] == c)
+					return i;
+				i++;
+			}
+			return -1;
+		}
+
+		size_t Find(const char* s, size_t pos = 0) const
+		{
+			size_t begin = 0;
+			size_t len = strlen(s);
+			size_t end = _size - len - 1;
+			size_t flag = 0;
+
+			if (_size < len)
+				return -1;
+
+			while (begin <= end)
+			{
+				size_t i = 0;
+				size_t f = Find(s[0], begin);
+
+				pos = f;//防止flag++之后，所返回的位置不正确。
+
+				while (i < len)
+				{
+					if (_str[pos] == s[i])
+					{
+						i++;
+						pos++;
+					}
+
+					else
+					{
+						flag++;
+						break;
+					}
+					if (flag == 0)
+						return f;
+					begin += flag;
+				}
+			}
+
+
+		}
