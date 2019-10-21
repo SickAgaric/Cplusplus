@@ -238,3 +238,16 @@ void Test()
 	//cout << (d1 == d2) << endl;
 
 }
+
+
+
+#include"Date.h"
+
+
+
+int main()
+{
+	Test();
+	system("pause");
+	return 0;
+}
