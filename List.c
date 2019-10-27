@@ -206,7 +206,7 @@
 //	}
 //}
 #include<iostream>
-
+#include<assert.h>
 using namespace std;
 
 
@@ -227,10 +227,12 @@ namespace cx
 		{}
 	};
 
-	template<class T>
+	template<class T, class Ref, class Ptr>
+
 	struct __list_iterator
 	{
 		typedef __list_node<T> node;
+		typedef __list_iterator<T, Ref, Ptr> Self;
 
 		node* _node;
 
@@ -238,24 +240,34 @@ namespace cx
 			:_node(node)
 		{}
 
-		T& operator*()
+		
+
+		Ref operator*()
 		{
 			return _node->_data;
 		}
+		Ptr operator->()
+		{
+			return &_node->_data;
+		}
 
-		__list_iterator<T>& operator++()//此处使用引用是因为这是前置++，出了作用域，不销毁
+		Self& operator++()//此处使用引用是因为这是前置++，出了作用域，不销毁
 		{
 			_node = _node->_next;
 			return *this;
 		}
-		__list_iterator<T> operator++(int)
+		Self operator++(int)
 		{
-			__list_iterator<T> tmp(*this);
+			Self tmp(*this);
 			_node = _node->_next;
 			return tmp;
 		}
 
-		bool operator!=(const __list_iterator<T>& it)
+		bool operator!=(const Self& it)
+		{
+			return _node != it._node;
+		}
+		bool operator==(const Self& it)
 		{
 			return _node != it._node;
 		}
@@ -266,7 +278,16 @@ namespace cx
 	{
 		typedef __list_node<T> node;
 	public:
-		typedef __list_iterator<T> iterator;
+		typedef __list_iterator<T, T&, T*> iterator;
+		typedef __list_iterator<T,const T&,const T*> const_iterator;
+		const_iterator begin() const
+		{
+			return const_iterator(_head->_next);
+		}
+		const_iterator end() const
+		{
+			return const_iterator(_head);
+		}
 
 		iterator begin()
 		{
@@ -283,12 +304,73 @@ namespace cx
 			_head->_next = _head;
 			_head->_prev = _head;
 		}
+		list(const list<T>& l)
+		{
+			_head = new node;
+			_head->_next = _head;
+			_head->_prev = _head;
 
+			auto it = l.begin();
+
+			while (it != l.end())
+			{
+				push_back(*it);
+				++it;
+			}
+		}
+
+		list<T>& operator=(list<T> l)
+		{
+			swap(_head, l._head);
+			return *this;
+			/*if (*this == &l)
+				return *this;
+			auto it = l.begin();
+			while (it != l.end())
+			{
+				push_back(*it);
+				++it;
+			}
+			return *this;*/
+		}
+
+		~list()
+		{
+			clear();
+
+			delete[] _head;
+			_head = nullptr;
+		}
+
+		void clear()
+		{
+			iterator it = begin();
+			while (it != end())
+			{
+				it = erase(it);
+			}
+		}
+
+		iterator erase(iterator pos)
+		{
+			node* cur = pos._node;
+			assert(cur != _head);
+
+			node* prev = cur->_prev;
+			node* next = cur->_next;
+
+			prev->_next = next;
+			next->_prev = prev;
+
+			delete cur;
+
+			return iterator(next);
+		}
 
 		void push_back(const T& x)
 		{
 			node* tail = _head->_prev;
-			node* newnode = new node(x);
+			node* newnode = new node(x);//调用__list_iterator(node* node)构造函数
 
 			_head->_prev = newnode;
 			newnode->_next = _head;
@@ -300,17 +382,9 @@ namespace cx
 	private:
 		node* _head;
 	};
-
-	void test()
+	void print_list(const list<int>& l)
 	{
-		list<int> l;//调用list构造函数初始化head
-		l.push_back(1);
-		l.push_back(2);
-		l.push_back(3);
-		l.push_back(4);
-		l.push_back(5);
-
-		list<int>::iterator it = l.begin();
+		auto it = l.begin();
 
 		while (it != l.end())
 		{
@@ -318,5 +392,35 @@ namespace cx
 			it++;
 		}
 		cout << endl;
+	}
+	void test()
+	{
+		list<int> _l;
+		list<int> l;//调用list构造函数初始化head
+		l.push_back(1);
+		l.push_back(2);
+		l.push_back(3);
+		l.push_back(4);
+		l.push_back(5);
+		_l.push_back(6);
+		_l.push_back(7);
+		_l.push_back(8);
+		print_list(_l);
+
+		_l = l;
+		print_list(_l);
+
+		auto it = l.begin();
+
+		while (it != l.end())
+		{
+			if (*it % 3 == 0)
+			{
+				it = l.erase(it);
+			}
+			++it;
+		}
+
+		print_list(l);
 	}
 }
