@@ -66,6 +66,8 @@ namespace cx
 			return _start[pos];
 		}
 
+		
+		
 		void resize(size_t n, const T& v = T())
 		{
 			if (n < size())
